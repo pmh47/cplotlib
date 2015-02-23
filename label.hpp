@@ -31,15 +31,15 @@ namespace plots
 		} attributes;
 		
 		std::string text;
-		Point2D location;
+		OverlayLocation location;
 		
 		Rectangle bounds;
 		
-		Label(std::string const &text_, Point2D const &location_, Attributes const &attributes_)
+		Label(std::string const &text_, OverlayLocation const &location_, Attributes const &attributes_)
 			: attributes(attributes_), text(text_), location(location_)
 		{
-			// ** ...
-//			bounds = ...;
+			// ** Tricky to estimate this without a context to measure against!
+			bounds = {location.basePoint, {location.basePoint.x + 1, location.basePoint.y + 1}};
 		}
 		
 		virtual void display(cairo_t *const context) const override
@@ -47,8 +47,9 @@ namespace plots
 			cairo_save(context);
 			attributes.colour.setAsSourceFor(context);
 			cairo_set_font_size(context, attributes.size);
-			cairo_move_to(context, location.x, location.y);
+			cairo_move_to(context, location.basePoint.x, location.basePoint.y);
 			cairo_identity_matrix(context);
+			cairo_rel_move_to(context, location.pixelOffsetX, location.pixelOffsetY);
 			cairo_text_extents_t extents;
 			cairo_text_extents(context, text.c_str(), &extents);
 			double const xOffset =

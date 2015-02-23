@@ -60,9 +60,8 @@ namespace plots
 							XGetGeometry(displayPtr, drawable, &rootWindow, &x, &y, &width, &height, &border, &depth);
 							cairo_xlib_surface_set_size(sfc, width, height);
 							Colour::windowBackground().setAsSourceFor(contextPtr);
-//							cairo_set_source_rgb(contextPtr, backgroundColour.r, backgroundColour.g, backgroundColour.b);
 							cairo_paint(contextPtr);
-							content->display(contextPtr, Rectangle{ {0, 0}, {width, height} });
+							content->display(contextPtr, Rectangle{ {0, 0}, {(double)width, (double)height} });
 						}
 						break;
 					case KeyPress:

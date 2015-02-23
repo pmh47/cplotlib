@@ -39,6 +39,27 @@ namespace plots
 			return Point2D{ (topLeft.x + bottomRight.x) / 2, (topLeft.y + bottomRight.y) / 2 };
 		}
 	};
+	
+	struct OverlayLocation
+	{
+		OverlayLocation(Point2D const &basePoint_)
+			: basePoint(basePoint_), pixelOffsetX(0), pixelOffsetY(0)
+		{
+		}
+		
+		OverlayLocation(Point2D const &basePoint_, double const pixelOffsetX_, double const pixelOffsetY_)
+			: basePoint(basePoint_), pixelOffsetX(pixelOffsetX_), pixelOffsetY(pixelOffsetY_)
+		{
+		}
+		
+		OverlayLocation(double const baseX, double const baseY, double const pixelOffsetX_, double const pixelOffsetY_)
+			: basePoint{baseX, baseY}, pixelOffsetX(pixelOffsetX_), pixelOffsetY(pixelOffsetY_)
+		{
+		}
+		
+		Point2D basePoint;
+		double pixelOffsetX, pixelOffsetY;
+	};
 
 	struct Colour
 	{

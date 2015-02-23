@@ -25,10 +25,18 @@ namespace plots
 		Rectangle bounds;
 		
 		Patch(std::vector<Point2D> const &points_, Attributes const &attributes_)
-			: points(points_), attributes(attributes_)
+			: attributes(attributes_), points(points_)
 		{
-			// ** ...
-//			bounds = ...;
+			bounds = {
+				{ std::numeric_limits<double>::max(), std::numeric_limits<double>::max() },
+				{ std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest() }
+			};
+			for (auto const &point : points) {
+				bounds.topLeft.x = std::min(bounds.topLeft.x, point.x);
+				bounds.topLeft.y = std::min(bounds.topLeft.y, point.y);
+				bounds.bottomRight.x = std::min(bounds.bottomRight.x, point.x);
+				bounds.bottomRight.y = std::min(bounds.bottomRight.y, point.y);
+			}
 		}
 		
 		static std::shared_ptr<Patch> makeRectangle(Rectangle const &bounds, Attributes const &attributes)

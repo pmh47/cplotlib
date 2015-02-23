@@ -21,7 +21,7 @@ namespace plots
 			if (maybeBounds)
 				location = *maybeBounds;
 			else
-				location = { Point2D{0, 0}, Point2D{width, height} };
+				location = { Point2D{0, 0}, Point2D{(double)width, (double)height} };
 			int const stride = cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, mat.cols);
 			buffer.resize(mat.rows * stride);
 			for (int row = 0; row < mat.rows; ++row) {
