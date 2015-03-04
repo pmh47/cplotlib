@@ -84,16 +84,21 @@ namespace plots
 
 		void save(std::string const &filename) const
 		{
-			int const width = defaultWidth / 100 * 72;
-			int const height = defaultHeight / 100 * 72;
 			cairo_surface_t *surfacePtr;
+			int width, height;
 			bool writePng = false;
-			if (filename.substr(filename.length() - 4) == ".pdf")
+			if (filename.substr(filename.length() - 4) == ".pdf") {
+				width = defaultWidth / 100 * 72;
+				height = defaultHeight / 100 * 72;
 				surfacePtr = cairo_pdf_surface_create(filename.c_str(), width, height);
-			else if (filename.substr(filename.length() - 4) == ".eps") {
+			} else if (filename.substr(filename.length() - 4) == ".eps") {
+				width = defaultWidth / 100 * 72;
+				height = defaultHeight / 100 * 72;
 				surfacePtr = cairo_ps_surface_create(filename.c_str(), width, height);
 				cairo_ps_surface_set_eps(surfacePtr, true);
 			} else if (filename.substr(filename.length() - 4) == ".png") {
+				width = defaultWidth;
+				height = defaultHeight;
 				surfacePtr = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
 				writePng = true;
 			} else
