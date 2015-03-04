@@ -27,6 +27,8 @@
 
 #include <cairo/cairo.h>
 #include <cairo/cairo-xlib.h>
+#include <cairo/cairo-pdf.h>
+#include <cairo/cairo-ps.h>
 
 #include "utilities.hpp"
 #include "object.hpp"

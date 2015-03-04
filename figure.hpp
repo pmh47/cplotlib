@@ -13,9 +13,12 @@ namespace plots
 	struct Figure
 	{
 		std::shared_ptr<Pane> const content;
+		std::string const title;
+		int const defaultWidth;
+		int const defaultHeight;
 		
-		explicit Figure(std::shared_ptr<Pane> const &content_)
-			: content(content_)
+		explicit Figure(std::shared_ptr<Pane> const &content_, std::string const &title_ = "Untitled Figure")
+			: content(content_), title(title_), defaultWidth(800), defaultHeight(600)
 		{
 		}
 
@@ -29,7 +32,7 @@ namespace plots
 			XSelectInput(dsp, da, ButtonPressMask | KeyPressMask | ExposureMask);
 			XMapWindow(dsp, da);
 
-			XStoreName(dsp, da, content->title ? content->title->c_str() : "Untitled Figure");
+			XStoreName(dsp, da, title.c_str());
 
 			cairo_surface_t *surface = cairo_xlib_surface_create(dsp, da, DefaultVisual(dsp, screen), width, height);
 			cairo_xlib_surface_set_size(surface, width, height);
@@ -72,7 +75,7 @@ namespace plots
 
 		void display() const
 		{
-			auto const surfacePtr = createX11Surface(800, 600);
+			auto const surfacePtr = createX11Surface(defaultWidth, defaultHeight);
 			auto const contextPtr = cairo_create(surfacePtr);
 			runEventLoop(contextPtr, surfacePtr);
 			cairo_destroy(contextPtr);
@@ -81,6 +84,26 @@ namespace plots
 
 		void save(std::string const &filename) const
 		{
+			int const width = defaultWidth / 100 * 72;
+			int const height = defaultHeight / 100 * 72;
+			cairo_surface_t *surfacePtr;
+			bool writePng = false;
+			if (filename.substr(filename.length() - 4) == ".pdf")
+				surfacePtr = cairo_pdf_surface_create(filename.c_str(), width, height);
+			else if (filename.substr(filename.length() - 4) == ".eps") {
+				surfacePtr = cairo_ps_surface_create(filename.c_str(), width, height);
+				cairo_ps_surface_set_eps(surfacePtr, true);
+			} else if (filename.substr(filename.length() - 4) == ".png") {
+				surfacePtr = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
+				writePng = true;
+			} else
+				throw std::runtime_error(std::string(__FUNCTION__) + ": unexpected file extension for figure export");
+			auto const contextPtr = cairo_create(surfacePtr);
+			content->display(contextPtr, Rectangle{ {0, 0}, {width, height} });
+			if (writePng)
+				cairo_surface_write_to_png(surfacePtr, filename.c_str());
+			cairo_destroy(contextPtr);
+			cairo_surface_destroy(surfacePtr);
 		}
 	};
 }
