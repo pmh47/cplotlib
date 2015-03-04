@@ -14,9 +14,25 @@ namespace plots
 	{
 		boost::optional<std::string> title;
 
-		void display(cairo_t * const context, Rectangle const &bounds) const
+		static double constexpr clientInsetIfTitle = 24;
+		static double constexpr titleTopMargin = 4;
+		static double constexpr titleFontSize = 18;
+
+		void display(cairo_t * const context, Rectangle bounds) const
 		{
-			// ** render title and adjust bounds
+			if (title) {
+				cairo_save(context);
+				Colour::black().setAsSourceFor(context);
+				cairo_set_font_size(context, titleFontSize);
+				cairo_move_to(context, bounds.centre().x, bounds.topLeft.y + titleTopMargin);
+				cairo_identity_matrix(context);
+				cairo_text_extents_t extents;
+				cairo_text_extents(context, title->c_str(), &extents);
+				cairo_rel_move_to(context, -extents.width / 2 - extents.x_bearing, -extents.y_bearing);
+				cairo_show_text(context, title->c_str());
+				cairo_restore(context);
+				bounds.topLeft.y += clientInsetIfTitle;
+			}
 			displayClient(context, bounds);
 		}
 

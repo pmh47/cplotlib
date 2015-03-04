@@ -45,6 +45,18 @@ namespace plots
 			return std::make_shared<Grid>(panes_, margin_, title_);
 		}
 
+		static std::shared_ptr<Grid> makeBalanced(std::vector<std::shared_ptr<Pane>> const &panes_, double const margin_ = 0., boost::optional<std::string> const &title_ = boost::none_t())
+		{
+			auto const rowLength = (std::size_t)( std::sqrt(panes_.size()) + 0.9 );
+			std::vector<std::vector<std::shared_ptr<Pane>>> rearrangedPanes(1);
+			for (std::size_t paneIndex = 0; paneIndex < panes_.size(); ++paneIndex) {
+				if (rearrangedPanes.back().size() == rowLength)
+					rearrangedPanes.push_back( { } );
+				rearrangedPanes.back().push_back(panes_[paneIndex]);
+			}
+			return std::make_shared<Grid>(rearrangedPanes, margin_, title_);
+		}
+
 	protected:
 
 		void displayClient(cairo_t * const context, Rectangle const &bounds) const override

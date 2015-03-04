@@ -15,7 +15,7 @@ namespace plots
 		struct AxisProperties
 		{
 			bool visible;  // a margin is left for the axis (and elements drawn) iff this is set
-			boost::optional<Range> range;  // for y axes, range.minimum is at the bottom of device space
+			boost::optional<Range> range;  // minima of axis ranges are at top left of device space
 			boost::optional<double> tickInterval;
 	//		bool logarithmic;
 		};
@@ -35,8 +35,8 @@ namespace plots
 
 		Plot2D() : Pane(boost::none_t()) { }
 		
-		Plot2D(std::vector<std::shared_ptr<Object>> const &primaryObjects_, AxisProperties const &xAxisProperties_, AxisProperties const &yAxisProperties_)
-			: Pane(boost::none_t())
+		Plot2D(std::vector<std::shared_ptr<Object>> const &primaryObjects_, AxisProperties const &xAxisProperties_, AxisProperties const &yAxisProperties_, boost::optional<std::string> const &title_)
+			: Pane(title_)
 			, xAxisProperties(xAxisProperties_)
 			, yAxisProperties(yAxisProperties_)
 			, primaryObjects(primaryObjects_)
@@ -60,15 +60,15 @@ namespace plots
 		
 		static std::shared_ptr<Plot2D> make(std::vector<std::shared_ptr<Object>> const &primaryObjects_)
 		{
-			return std::make_shared<Plot2D>(primaryObjects_, AxisProperties{true, boost::none_t()}, AxisProperties{true, boost::none_t()});
+			return std::make_shared<Plot2D>(primaryObjects_, AxisProperties{true, boost::none_t()}, AxisProperties{true, boost::none_t()}, boost::none_t());
 		}
 
-		static std::shared_ptr<Plot2D> makeWithImage(std::string const &imageFilename, std::vector<std::shared_ptr<Object>> const &overlaidObjects = std::vector<std::shared_ptr<Object>>())
+		static std::shared_ptr<Plot2D> makeWithImage(std::string const &imageFilename, std::vector<std::shared_ptr<Object>> const &overlaidObjects = std::vector<std::shared_ptr<Object>>(), boost::optional<std::string> const &title = boost::none_t())
 		{
 			std::vector<std::shared_ptr<Object>> objects;
 			objects.push_back( std::make_shared<Image>(imageFilename) );
 			objects.insert(objects.end(), overlaidObjects.begin(), overlaidObjects.end());
-			return std::make_shared<Plot2D>(objects, AxisProperties{false, boost::none_t()}, AxisProperties{false, boost::none_t()});
+			return std::make_shared<Plot2D>(objects, AxisProperties{false, boost::none_t()}, AxisProperties{false, boost::none_t()}, title);
 		}
 
 	protected:

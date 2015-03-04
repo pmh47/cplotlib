@@ -17,8 +17,8 @@ namespace plots
 		int const defaultWidth;
 		int const defaultHeight;
 		
-		explicit Figure(std::shared_ptr<Pane> const &content_, std::string const &title_ = "Untitled Figure")
-			: content(content_), title(title_), defaultWidth(800), defaultHeight(600)
+		explicit Figure(std::shared_ptr<Pane> const &content_, std::string const &title_ = "Untitled Figure", int const defaultWidth_ = 800, int const defaultHeight_ = 600)
+			: content(content_), title(title_), defaultWidth(defaultWidth_), defaultHeight(defaultHeight_)
 		{
 		}
 
@@ -104,7 +104,9 @@ namespace plots
 			} else
 				throw std::runtime_error(std::string(__FUNCTION__) + ": unexpected file extension for figure export");
 			auto const contextPtr = cairo_create(surfacePtr);
-			content->display(contextPtr, Rectangle{ {0, 0}, {width, height} });
+			Colour::windowBackground().setAsSourceFor(contextPtr);
+			cairo_paint(contextPtr);
+			content->display(contextPtr, Rectangle{ {0, 0}, {(double)width, (double)height} });
 			if (writePng)
 				cairo_surface_write_to_png(surfacePtr, filename.c_str());
 			cairo_destroy(contextPtr);
